@@ -58,74 +58,73 @@ const RESULT_MAP = {
   },
 };
 
-/* =========================
-  질문: 정확히 7개
-  - 보기(선택지)는 4개씩(2x2 UI 유지)
-  - 중간에 “이걸로 가려진다고?” 낚시 질문 1개 포함
-  - 가중치(score)로 6타입 분류
-========================= */
+/* ==========================================================
+  질문 7개 (덜 티 나는 간접 문항)
+  - 각 옵션은 한 타입만 찍지 않고 여러 타입에 가중치 분산
+  - 이후 실제 응답 데이터로 이 가중치를 ‘통계적으로 보정’ 가능
+========================================================== */
 const QUESTIONS = [
   {
-    title: "버거 첫 입에서 제일 중요한 건?",
+    title: "편의점에서 ‘나도 모르게’ 손이 가는 건?",
     options: [
-      { label: "정석 밸런스", icon: "🍔", type: "classic", score: { classic: 2, nutty: 1 } },
-      { label: "혀끝 화끈", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
-      { label: "육즙이 주인공", icon: "🍖", type: "juicy", score: { juicy: 2, premium: 1 } },
-      { label: "바삭 소리", icon: "✨", type: "crispy", score: { crispy: 2 } },
+      { label: "국룰 조합(늘 먹던 맛)", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
+      { label: "매운 과자/라면류", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
+      { label: "육포/단백질류", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "견과/고소한 스낵", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
     ],
   },
   {
-    title: "소스 취향은 딱 이거야",
+    title: "치킨을 시키면 네 취향은 보통 이쪽",
     options: [
-      { label: "기본 소스(국룰)", icon: "🍔", type: "classic", score: { classic: 2 } },
-      { label: "청양/핫소스 추가", icon: "🌶️", type: "spicy", score: { spicy: 2, crispy: 1 } },
-      { label: "고소한 조합이 좋음", icon: "🌿", type: "nutty", score: { nutty: 2, classic: 1 } },
-      { label: "고급 풍미(재료빨)", icon: "👑", type: "premium", score: { premium: 2, juicy: 1 } },
+      { label: "후라이드(바삭이 전부)", icon: "✨", type: "crispy", w: { crispy: 2, classic: 0.5 } },
+      { label: "양념/매운맛(한 방)", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
+      { label: "구이/훈연(풍미파)", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
+      { label: "간장/마늘(조화·고소)", icon: "🌿", type: "nutty", w: { nutty: 1.5, classic: 1 } },
     ],
   },
   {
-    title: "식감 vs 풍미, 뭐가 더 중요해?",
+    title: "네 ‘소스 습관’에 더 가까운 건?",
     options: [
-      { label: "겉바속촉이 최고", icon: "✨", type: "crispy", score: { crispy: 2 } },
-      { label: "촉촉함/육즙", icon: "🍖", type: "juicy", score: { juicy: 2 } },
-      { label: "은은한 고소 여운", icon: "🌿", type: "nutty", score: { nutty: 2 } },
-      { label: "완성도/퀄리티", icon: "👑", type: "premium", score: { premium: 2 } },
+      { label: "소스는 최소(재료 맛)", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1, classic: 0.5 } },
+      { label: "소스 듬뿍(풍부해야 함)", icon: "🌿", type: "nutty", w: { nutty: 1.5, spicy: 0.5, classic: 0.5 } },
+      { label: "찍먹파(바삭 지킨다)", icon: "✨", type: "crispy", w: { crispy: 2, classic: 0.5 } },
+      { label: "매콤 소스는 무조건 추가", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
     ],
   },
   {
     title: "이걸로 취향이 가려진다고? (낚시 질문) 🤔",
     options: [
-      { label: "피넛버터+치즈? 오히려 좋아", icon: "🌿", type: "nutty", score: { nutty: 2, premium: 1 } },
-      { label: "매운맛은 끝까지 간다", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
-      { label: "더블패티면 설명 끝", icon: "🍖", type: "juicy", score: { juicy: 2, premium: 1 } },
-      { label: "난 정석이 편해", icon: "🍔", type: "classic", score: { classic: 2 } },
+      { label: "피넛버터+치즈? 오히려 좋아", icon: "🌿", type: "nutty", w: { nutty: 2, premium: 0.5 } },
+      { label: "더블패티면 대화 종료", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "난 정석이 편하다", icon: "🍔", type: "classic", w: { classic: 2 } },
+      { label: "매운맛은 ‘끝’까지 간다", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
     ],
   },
   {
-    title: "버거 고를 때 너의 습관은?",
+    title: "감자튀김은 어떤 타입이 진짜야?",
     options: [
-      { label: "늘 먹던 거(안전픽)", icon: "🍔", type: "classic", score: { classic: 2 } },
-      { label: "신메뉴/한정에 약함", icon: "👑", type: "premium", score: { premium: 2, nutty: 1 } },
-      { label: "매운 메뉴 있으면 그걸로", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
-      { label: "튀김류/카츠류 보면 못 참음", icon: "✨", type: "crispy", score: { crispy: 2 } },
+      { label: "얇고 바삭(크런치)", icon: "✨", type: "crispy", w: { crispy: 2, spicy: 0.5 } },
+      { label: "두껍고 든든(포만감)", icon: "🍖", type: "juicy", w: { juicy: 1.5, classic: 0.5 } },
+      { label: "양념/시즈닝(자극)", icon: "🌶️", type: "spicy", w: { spicy: 1.5, crispy: 0.5, nutty: 0.5 } },
+      { label: "트러플/치즈(고급)", icon: "👑", type: "premium", w: { premium: 2, nutty: 0.5 } },
     ],
   },
   {
-    title: "먹고 난 뒤, 남았으면 하는 느낌은?",
+    title: "‘한 입’에서 더 행복한 순간은?",
     options: [
-      { label: "깔끔하게 정리되는 맛", icon: "🍔", type: "classic", score: { classic: 2 } },
-      { label: "매운 킥이 오래 남는 맛", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
-      { label: "고소한 여운이 잔잔하게", icon: "🌿", type: "nutty", score: { nutty: 2 } },
-      { label: "고급진 풍미가 ‘와’ 하는 맛", icon: "👑", type: "premium", score: { premium: 2 } },
+      { label: "씹자마자 ‘바삭!’", icon: "✨", type: "crispy", w: { crispy: 2 } },
+      { label: "입안에 ‘육즙!’", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "은은하게 ‘고소!’", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
+      { label: "혀끝에 ‘화끈!’", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
     ],
   },
   {
-    title: "마지막! 딱 하나만 고르면?",
+    title: "마지막! 너의 ‘선택 기준’은 보통 이거",
     options: [
-      { label: "정석의 안정감", icon: "🍔", type: "classic", score: { classic: 2 } },
-      { label: "자극 없으면 아쉬움", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
-      { label: "패티가 주인공이어야 함", icon: "🍖", type: "juicy", score: { juicy: 2 } },
-      { label: "씹는 재미가 곧 행복", icon: "✨", type: "crispy", score: { crispy: 2 } },
+      { label: "실패 없는 정석", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
+      { label: "자극이 있어야 만족", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
+      { label: "퀄리티/완성도", icon: "👑", type: "premium", w: { premium: 2, juicy: 0.5 } },
+      { label: "듣도보도 못한 조합(끌림)", icon: "🌿", type: "nutty", w: { nutty: 1.5, premium: 0.5, spicy: 0.5 } },
     ],
   },
 ];
@@ -200,7 +199,7 @@ function renderQuestion() {
         optionIdx: idx,
         type: opt.type,
         label: opt.label,
-        score: opt.score,
+        w: opt.w,
       };
       nextBtn.disabled = false;
     });
@@ -209,35 +208,40 @@ function renderQuestion() {
   });
 }
 
-function calcResultType() {
+function calcScores() {
   const scores = {};
   TYPES.forEach((t) => (scores[t] = 0));
 
   answers.forEach((a) => {
-    if (!a) return;
-    const sc = a.score || {};
+    if (!a || !a.w) return;
     TYPES.forEach((t) => {
-      if (typeof sc[t] === "number") scores[t] += sc[t];
+      const val = a.w[t];
+      if (typeof val === "number") scores[t] += val;
     });
   });
 
-  // 동점 우선순위(원하는대로 바꿔도 됨)
-  const order = ["classic", "spicy", "juicy", "crispy", "nutty", "premium"];
-  let best = order[0];
-  order.forEach((t) => {
-    if (scores[t] > scores[best]) best = t;
-  });
-
-  return best;
+  return scores;
 }
 
-async function submitIfNeeded(resultType) {
+function pickTop2(scores) {
+  const sorted = [...TYPES].sort((a, b) => scores[b] - scores[a]);
+  return { top1: sorted[0], top2: sorted[1], sorted };
+}
+
+function calcResultType() {
+  const scores = calcScores();
+  const { top1 } = pickTop2(scores);
+  return top1;
+}
+
+async function submitIfNeeded(resultType, scores) {
   if (!CONFIG.SUBMIT_URL) return;
 
   const payload = {
     createdAt: new Date().toISOString(),
     userAgent: navigator.userAgent,
     resultType,
+    scores,
     answers,
   };
 
@@ -252,15 +256,25 @@ async function submitIfNeeded(resultType) {
   }
 }
 
+function typeName(t) {
+  return RESULT_MAP[t]?.title ?? t;
+}
+
 async function showResult() {
   progressFill.style.width = `100%`;
 
-  const t = calcResultType();
-  const r = RESULT_MAP[t];
+  const scores = calcScores();
+  const { top1, top2 } = pickTop2(scores);
 
+  const r = RESULT_MAP[top1];
   resultBadge.textContent = r.badge;
   resultTitle.textContent = r.title;
-  resultTagline.textContent = r.tagline;
+
+  // 보조취향 표시(박빙이면)
+  const gap = (scores[top1] ?? 0) - (scores[top2] ?? 0);
+  const secondary = gap <= 1 ? ` · 보조취향: ${typeName(top2)}` : "";
+  resultTagline.textContent = `${r.tagline}${secondary}`;
+
   resultQuote.textContent = r.quote;
 
   resultMenus.innerHTML = "";
@@ -274,7 +288,7 @@ async function showResult() {
   card.classList.add("hidden");
   resultCard.classList.remove("hidden");
 
-  await submitIfNeeded(t);
+  await submitIfNeeded(top1, scores);
 }
 
 function next() {
