@@ -63,7 +63,7 @@ const QUESTIONS = [
     ],
   },
   {
-    title: "너 요즘 자꾸 끌리는 맛은 어느 쪽인가요?",
+    title: "요즘 자꾸 끌리는 맛은 어느 쪽인가요?",
     options: [
       { label: "깔끔하고 무난한 맛", icon: "🍔", type: "classic", w: { classic: 2 } },
       { label: "자극적이고 쎈 맛", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
@@ -320,3 +320,4 @@ shareBtn.addEventListener("click", async () => {
 });
 
 renderQuestion();
+
