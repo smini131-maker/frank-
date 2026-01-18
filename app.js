@@ -54,7 +54,7 @@ const RESULT_MAP = {
 ========================================================== */
 const QUESTIONS = [
   {
-    title: "처음 한 입 먹고 ‘아 이거다’ 싶을 때는?",
+    title: "처음 한 입 먹고 ‘아 이거다’ 싶을 때는 언제인가요요?",
     options: [
       { label: "맛이 딱 균형 잡혔을 때", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
       { label: "혀끝에 전해지는 매운느낌이 딱 올 때", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
@@ -108,7 +108,7 @@ const QUESTIONS = [
     ],
   },
   {
-    title: "마지막! 너한테 제일 잘 맞는 말은?",
+    title: "마지막! 제일 잘 맞는 말은 무엇인가요요?",
     options: [
       { label: "안정적인 정석이 최고", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
       { label: "자극 없으면 심심해", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
@@ -320,4 +320,5 @@ shareBtn.addEventListener("click", async () => {
 });
 
 renderQuestion();
+
 
