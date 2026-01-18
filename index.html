@@ -14,7 +14,7 @@
     <header class="top">
       <div class="top-row">
         <h1 class="brand">버거도 취향이다</h1>
-        <div class="step" id="stepText">1/7</div>
+        <div class="step" id="stepText">1/9</div>
       </div>
 
       <div class="progress" aria-label="진행률">
@@ -22,10 +22,9 @@
       </div>
     </header>
 
-    <!-- CARD -->
+    <!-- QUESTION CARD -->
     <section class="card" id="card">
-      <h2 class="question" id="questionTitle">당신의 버거 스타일은?</h2>
-
+      <h2 class="question" id="questionTitle">질문</h2>
       <div class="options" id="options"></div>
 
       <div class="bottom-bar">
@@ -36,13 +35,23 @@
 
     <!-- RESULT -->
     <section class="card result hidden" id="resultCard">
-      <div class="result-badge" id="resultBadge">⭐</div>
-      <h2 class="result-title" id="resultTitle">클래식형</h2>
-      <p class="result-desc" id="resultDesc"></p>
+      <div class="result-head">
+        <div class="result-badge" id="resultBadge">🍔</div>
+        <div class="result-head-text">
+          <h2 class="result-title" id="resultTitle">클래식</h2>
+          <p class="result-tagline" id="resultTagline"></p>
+        </div>
+      </div>
+
+      <div class="quote-box" id="resultQuoteBox">
+        <div class="quote-mark">“</div>
+        <p class="quote-text" id="resultQuote"></p>
+        <div class="quote-mark end">”</div>
+      </div>
 
       <div class="result-box">
         <div class="result-box-title">추천 메뉴</div>
-        <div class="result-box-value" id="resultMenu"></div>
+        <div class="chips" id="resultMenus"></div>
       </div>
 
       <div class="result-actions">
@@ -50,9 +59,7 @@
         <button class="ghost-btn" id="shareBtn" type="button">공유하기</button>
       </div>
 
-      <p class="tiny">
-        * 결과/메뉴 문구는 <code>app.js</code>에서 자유롭게 바꿀 수 있어.
-      </p>
+      <p class="tiny">* 문구/메뉴/질문은 <code>app.js</code>에서 수정 가능</p>
     </section>
 
     <noscript>
