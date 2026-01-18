@@ -1,118 +1,141 @@
 /* =========================
-   설정(선택): 응답 저장 URL
-   - 구글 Apps Script / 서버 엔드포인트를 만들면 여기에 넣기
-   - 지금은 비워두면 저장 없이 설문만 동작
+   (선택) 응답 저장 URL
 ========================= */
 const CONFIG = {
   SUBMIT_URL: "", // 예: "https://script.google.com/macros/s/XXXX/exec"
 };
 
 /* =========================
-   7문항 예시 (원하면 문항/선택지 문구만 바꾸면 됨)
-   - 각 선택지는 type(클래식/매콤/이색/프리미엄) 점수를 1점씩 부여
+  타입 키(6개)
+========================= */
+const TYPES = ["classic", "spicy", "juicy", "crispy", "nutty", "premium"];
+
+/* =========================
+  결과: (이미지 1 톤앤매너 + 이미지 2 메뉴 매핑)
+========================= */
+const RESULT_MAP = {
+  classic: {
+    badge: "🍔",
+    title: "클래식",
+    tagline: "기본에 충실한 맛 선호. 전통적인 수제버거",
+    quote: "당신은 역시 기본에 충실한 ‘클래식 버거 스타일’! 호불호 없는 ‘프랭크 버거’가 딱이에요.",
+    menus: ["프랭크 버거", "K 불고기 버거"],
+  },
+  spicy: {
+    badge: "🌶️",
+    title: "매콤",
+    tagline: "자극적인 맛 선호. 혀끝에 전해지는 화끈한 경험",
+    quote: "화끈한 매력의 당신! 매콤한 ‘K 핫불고기 버거’로 스트레스를 날려보세요!",
+    menus: ["K 핫불고기 버거", "청양마요 쉬림프 버거"],
+  },
+  juicy: {
+    badge: "🍖",
+    title: "육즙",
+    tagline: "묵직한 깊은 맛 선호. 입안에 퍼지는 패티 본연의 풍미",
+    quote: "육즙에 진심인 당신! ‘더블 비프 치즈 버거’의 풍성한 육즙을 한입에 느껴보세요.",
+    menus: ["치즈 도넛 비프 버거", "더블 비프 치즈 버거"],
+  },
+  crispy: {
+    badge: "✨",
+    title: "바삭",
+    tagline: "경쾌한 식감을 선호. 씹는 맛에서 느껴지는 즐거움",
+    quote: "식감에 진심인 당신! ‘크리스피 카츠 버거’의 반전 매력에 빠져보세요!",
+    menus: ["크리스피 카츠 버거", "크리스피 치킨 버거"],
+  },
+  nutty: {
+    badge: "🌿",
+    title: "고소",
+    tagline: "맛의 조화를 선호. 은은하게 오래 남는 풍미",
+    quote: "은은한 고소함에 끌리는 당신! ‘피넛 버터 더블 치즈 버거’의 조화로운 풍미를 즐겨보세요.",
+    menus: ["피넛 버터 더블 치즈버거", "JG 버거"],
+  },
+  premium: {
+    badge: "👑",
+    title: "프리미엄",
+    tagline: "완성도 있는 버거를 선호. 고급재료로는 특별한 경험",
+    quote: "프리미엄을 좋아하는 당신! ‘100% 한우 버거’의 고급진 맛을 느껴보세요!",
+    menus: ["100% 한우 버거", "비프 앤 쉬림프 버거"],
+  },
+};
+
+/* =========================
+  질문: 정확히 7개
+  - 보기(선택지)는 4개씩(2x2 UI 유지)
+  - 중간에 “이걸로 가려진다고?” 낚시 질문 1개 포함
+  - 가중치(score)로 6타입 분류
 ========================= */
 const QUESTIONS = [
   {
-    title: "버거를 고를 때 가장 먼저 보는 건?",
+    title: "버거 첫 입에서 제일 중요한 건?",
     options: [
-      { label: "기본에 충실", icon: "⭐", type: "classic" },
-      { label: "매운맛 유혹", icon: "🔥", type: "spicy" },
-      { label: "새로운 조합", icon: "🍃", type: "unique" },
-      { label: "재료 퀄리티", icon: "🏅", type: "premium" },
+      { label: "정석 밸런스", icon: "🍔", type: "classic", score: { classic: 2, nutty: 1 } },
+      { label: "혀끝 화끈", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
+      { label: "육즙이 주인공", icon: "🍖", type: "juicy", score: { juicy: 2, premium: 1 } },
+      { label: "바삭 소리", icon: "✨", type: "crispy", score: { crispy: 2 } },
     ],
   },
   {
-    title: "한 입에서 가장 중요한 건?",
+    title: "소스 취향은 딱 이거야",
     options: [
-      { label: "밸런스", icon: "⭐", type: "classic" },
-      { label: "자극", icon: "🔥", type: "spicy" },
-      { label: "개성", icon: "🍃", type: "unique" },
-      { label: "풍미", icon: "🏅", type: "premium" },
+      { label: "기본 소스(국룰)", icon: "🍔", type: "classic", score: { classic: 2 } },
+      { label: "청양/핫소스 추가", icon: "🌶️", type: "spicy", score: { spicy: 2, crispy: 1 } },
+      { label: "고소한 조합이 좋음", icon: "🌿", type: "nutty", score: { nutty: 2, classic: 1 } },
+      { label: "고급 풍미(재료빨)", icon: "👑", type: "premium", score: { premium: 2, juicy: 1 } },
     ],
   },
   {
-    title: "당신의 버거 스타일은?",
+    title: "식감 vs 풍미, 뭐가 더 중요해?",
     options: [
-      { label: "클래식", icon: "⭐", type: "classic" },
-      { label: "매콤", icon: "🔥", type: "spicy" },
-      { label: "이색", icon: "🍃", type: "unique" },
-      { label: "프리미엄", icon: "🏅", type: "premium" },
+      { label: "겉바속촉이 최고", icon: "✨", type: "crispy", score: { crispy: 2 } },
+      { label: "촉촉함/육즙", icon: "🍖", type: "juicy", score: { juicy: 2 } },
+      { label: "은은한 고소 여운", icon: "🌿", type: "nutty", score: { nutty: 2 } },
+      { label: "완성도/퀄리티", icon: "👑", type: "premium", score: { premium: 2 } },
     ],
   },
   {
-    title: "소스 취향은?",
+    title: "이걸로 취향이 가려진다고? (낚시 질문) 🤔",
     options: [
-      { label: "기본 소스", icon: "⭐", type: "classic" },
-      { label: "핫소스", icon: "🔥", type: "spicy" },
-      { label: "특제/한정", icon: "🍃", type: "unique" },
-      { label: "트러플/치즈", icon: "🏅", type: "premium" },
+      { label: "피넛버터+치즈? 오히려 좋아", icon: "🌿", type: "nutty", score: { nutty: 2, premium: 1 } },
+      { label: "매운맛은 끝까지 간다", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
+      { label: "더블패티면 설명 끝", icon: "🍖", type: "juicy", score: { juicy: 2, premium: 1 } },
+      { label: "난 정석이 편해", icon: "🍔", type: "classic", score: { classic: 2 } },
     ],
   },
   {
-    title: "버거 먹는 날의 무드는?",
+    title: "버거 고를 때 너의 습관은?",
     options: [
-      { label: "편안하게", icon: "⭐", type: "classic" },
-      { label: "스트레스 해소", icon: "🔥", type: "spicy" },
-      { label: "모험", icon: "🍃", type: "unique" },
-      { label: "기념일/보상", icon: "🏅", type: "premium" },
+      { label: "늘 먹던 거(안전픽)", icon: "🍔", type: "classic", score: { classic: 2 } },
+      { label: "신메뉴/한정에 약함", icon: "👑", type: "premium", score: { premium: 2, nutty: 1 } },
+      { label: "매운 메뉴 있으면 그걸로", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
+      { label: "튀김류/카츠류 보면 못 참음", icon: "✨", type: "crispy", score: { crispy: 2 } },
     ],
   },
   {
-    title: "사이드 고르는 스타일은?",
+    title: "먹고 난 뒤, 남았으면 하는 느낌은?",
     options: [
-      { label: "감튀 국룰", icon: "⭐", type: "classic" },
-      { label: "양념/시즈닝", icon: "🔥", type: "spicy" },
-      { label: "색다른 사이드", icon: "🍃", type: "unique" },
-      { label: "프리미엄 음료", icon: "🏅", type: "premium" },
+      { label: "깔끔하게 정리되는 맛", icon: "🍔", type: "classic", score: { classic: 2 } },
+      { label: "매운 킥이 오래 남는 맛", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
+      { label: "고소한 여운이 잔잔하게", icon: "🌿", type: "nutty", score: { nutty: 2 } },
+      { label: "고급진 풍미가 ‘와’ 하는 맛", icon: "👑", type: "premium", score: { premium: 2 } },
     ],
   },
   {
-    title: "마지막 한 줄로 표현하면?",
+    title: "마지막! 딱 하나만 고르면?",
     options: [
-      { label: "정석이 최고", icon: "⭐", type: "classic" },
-      { label: "강렬해야 함", icon: "🔥", type: "spicy" },
-      { label: "남들과 다르게", icon: "🍃", type: "unique" },
-      { label: "고급스럽게", icon: "🏅", type: "premium" },
+      { label: "정석의 안정감", icon: "🍔", type: "classic", score: { classic: 2 } },
+      { label: "자극 없으면 아쉬움", icon: "🌶️", type: "spicy", score: { spicy: 2 } },
+      { label: "패티가 주인공이어야 함", icon: "🍖", type: "juicy", score: { juicy: 2 } },
+      { label: "씹는 재미가 곧 행복", icon: "✨", type: "crispy", score: { crispy: 2 } },
     ],
   },
 ];
 
 /* =========================
-   결과(문구/추천 메뉴는 여기서 바꾸면 됨)
-========================= */
-const RESULT_MAP = {
-  classic: {
-    badge: "⭐",
-    title: "클래식형",
-    desc: "기본의 완성도를 중시하는 정석파. 한 입 밸런스가 깔끔해야 만족해!",
-    menu: "프랭크 클래식 / 치즈 클래식 + 감튀 세트",
-  },
-  spicy: {
-    badge: "🔥",
-    title: "매콤추구형",
-    desc: "자극이 있어야 ‘먹었다’ 싶은 타입. 매운 킥이 핵심!",
-    menu: "스파이시 프랭크 / 핫치킨버거 + 탄산 세트",
-  },
-  unique: {
-    badge: "🍃",
-    title: "이색탐험형",
-    desc: "새로운 조합과 한정 메뉴에 약해. 남들이 안 고른 걸 고르는 재미!",
-    menu: "이색 한정 버거(예: 불고기/갈릭/특제소스) + 사이드 업그레이드",
-  },
-  premium: {
-    badge: "🏅",
-    title: "프리미엄지향형",
-    desc: "재료 퀄리티와 풍미를 최우선. ‘오늘은 좋은 거’가 어울려.",
-    menu: "프리미엄 더블치즈/베이컨 버거 + 프리미엄 음료 세트",
-  },
-};
-
-/* =========================
-   UI 로직
+   UI / 로직
 ========================= */
 let current = 0;
-const answers = Array(QUESTIONS.length).fill(null); // {type, label} or null
-let selectedType = null;
+const answers = Array(QUESTIONS.length).fill(null);
+let selectedAnswer = null;
 
 const stepText = document.getElementById("stepText");
 const progressFill = document.getElementById("progressFill");
@@ -125,19 +148,21 @@ const card = document.getElementById("card");
 const resultCard = document.getElementById("resultCard");
 const resultBadge = document.getElementById("resultBadge");
 const resultTitle = document.getElementById("resultTitle");
-const resultDesc = document.getElementById("resultDesc");
-const resultMenu = document.getElementById("resultMenu");
+const resultTagline = document.getElementById("resultTagline");
+const resultQuote = document.getElementById("resultQuote");
+const resultMenus = document.getElementById("resultMenus");
+
 const restartBtn = document.getElementById("restartBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 function updateTop() {
   stepText.textContent = `${current + 1}/${QUESTIONS.length}`;
-  const pct = Math.round(((current) / QUESTIONS.length) * 100);
+  const pct = Math.round((current / QUESTIONS.length) * 100);
   progressFill.style.width = `${pct}%`;
 }
 
 function renderQuestion() {
-  selectedType = null;
+  selectedAnswer = null;
   nextBtn.disabled = true;
 
   const q = QUESTIONS[current];
@@ -163,7 +188,6 @@ function renderQuestion() {
     btn.appendChild(label);
 
     btn.addEventListener("click", () => {
-      // 선택 표시
       [...optionsEl.querySelectorAll(".option")].forEach((b) => {
         b.classList.remove("selected");
         b.setAttribute("aria-pressed", "false");
@@ -171,8 +195,13 @@ function renderQuestion() {
       btn.classList.add("selected");
       btn.setAttribute("aria-pressed", "true");
 
-      selectedType = opt.type;
-      answers[current] = { type: opt.type, label: opt.label, q: q.title, idx };
+      selectedAnswer = {
+        q: q.title,
+        optionIdx: idx,
+        type: opt.type,
+        label: opt.label,
+        score: opt.score,
+      };
       nextBtn.disabled = false;
     });
 
@@ -181,18 +210,24 @@ function renderQuestion() {
 }
 
 function calcResultType() {
-  const scores = { classic: 0, spicy: 0, unique: 0, premium: 0 };
+  const scores = {};
+  TYPES.forEach((t) => (scores[t] = 0));
+
   answers.forEach((a) => {
     if (!a) return;
-    scores[a.type] += 1;
+    const sc = a.score || {};
+    TYPES.forEach((t) => {
+      if (typeof sc[t] === "number") scores[t] += sc[t];
+    });
   });
 
-  // 최고점 타입 선택 (동점이면 classic > spicy > unique > premium 순으로)
-  const order = ["classic", "spicy", "unique", "premium"];
+  // 동점 우선순위(원하는대로 바꿔도 됨)
+  const order = ["classic", "spicy", "juicy", "crispy", "nutty", "premium"];
   let best = order[0];
   order.forEach((t) => {
     if (scores[t] > scores[best]) best = t;
   });
+
   return best;
 }
 
@@ -213,7 +248,6 @@ async function submitIfNeeded(resultType) {
       body: JSON.stringify(payload),
     });
   } catch (e) {
-    // 저장 실패해도 UX는 계속 진행
     console.warn("submit failed:", e);
   }
 }
@@ -226,8 +260,16 @@ async function showResult() {
 
   resultBadge.textContent = r.badge;
   resultTitle.textContent = r.title;
-  resultDesc.textContent = r.desc;
-  resultMenu.textContent = r.menu;
+  resultTagline.textContent = r.tagline;
+  resultQuote.textContent = r.quote;
+
+  resultMenus.innerHTML = "";
+  r.menus.forEach((m) => {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.textContent = m;
+    resultMenus.appendChild(chip);
+  });
 
   card.classList.add("hidden");
   resultCard.classList.remove("hidden");
@@ -236,6 +278,8 @@ async function showResult() {
 }
 
 function next() {
+  answers[current] = selectedAnswer;
+
   if (current < QUESTIONS.length - 1) {
     current += 1;
     renderQuestion();
@@ -245,9 +289,14 @@ function next() {
 }
 
 function skip() {
-  // 스킵은 답을 null로 유지하고 다음으로
   answers[current] = null;
-  next();
+
+  if (current < QUESTIONS.length - 1) {
+    current += 1;
+    renderQuestion();
+  } else {
+    showResult();
+  }
 }
 
 skipBtn.addEventListener("click", skip);
