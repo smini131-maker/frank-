@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR 생성기</title>
+  <style>
+    body{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;margin:0;padding:20px;max-width:520px}
+    input{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;font-size:14px}
+    button{margin-top:10px;padding:12px 14px;border:0;border-radius:999px;background:#f7b500;font-weight:900;cursor:pointer}
+    #qrcode{margin-top:16px}
+    .tip{color:#666;font-size:12px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <h2>설문 링크 → QR 만들기</h2>
+  <input id="url" placeholder="https://(배포된 설문 URL)을 붙여넣기" />
+  <button id="make">QR 생성</button>
+  <div id="qrcode"></div>
+  <div class="tip">* 인터넷이 되는 환경에서만 QR이 생성돼(라이브러리 CDN 사용).</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const el = document.getElementById('qrcode');
+    document.getElementById('make').onclick = () => {
+      el.innerHTML = '';
+      const url = document.getElementById('url').value.trim();
+      if(!url) return alert('URL을 입력해줘!');
+      new QRCode(el, { text: url, width: 260, height: 260 });
+    };
+  </script>
+</body>
+</html>

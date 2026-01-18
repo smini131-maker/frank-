@@ -1,0 +1,242 @@
+:root{
+  --bg:#ffffff;
+  --text:#111;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --card:#ffffff;
+
+  --accent:#f7b500;           /* 다음 질문 버튼 */
+  --accent-press:#e6a700;
+
+  --progress-grad: linear-gradient(90deg, #ef4444 0%, #f7b500 100%);
+
+  --select-bg:#fff7df;        /* 선택된 카드(스크린샷 느낌) */
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app{
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 22px 16px 24px;
+}
+
+/* TOP */
+.top{ margin-bottom: 16px; }
+.top-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+.brand{
+  font-size: 22px;
+  font-weight: 800;
+  margin:0;
+}
+.step{
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.progress{
+  height: 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  margin-top: 10px;
+  overflow:hidden;
+}
+.progress-fill{
+  height: 100%;
+  width: 0%;
+  background: var(--progress-grad);
+  border-radius: 999px;
+  transition: width .25s ease;
+}
+
+/* CARD */
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.question{
+  margin: 4px 0 14px;
+  text-align:center;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+/* OPTIONS GRID (2x2) */
+.options{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.option{
+  border: 1px solid var(--border);
+  background:#fff;
+  border-radius: 14px;
+  padding: 14px 12px;
+  min-height: 92px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 10px;
+  transition: transform .06s ease, background .2s ease, border-color .2s ease;
+}
+
+.option:active{ transform: scale(0.99); }
+
+.option.selected{
+  background: var(--select-bg);
+  border-color: #f1d98a;
+}
+
+.icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 20px;
+  user-select:none;
+}
+
+.label{
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* icon tint */
+.icon.classic{ background:#fff3c9; }
+.icon.spicy{ background:#ffe1e1; }
+.icon.unique{ background:#dff7ea; }
+.icon.premium{ background:#e3efff; }
+
+/* Bottom bar */
+.bottom-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.link-btn{
+  border:0;
+  background:transparent;
+  color: var(--muted);
+  font-weight: 800;
+  cursor:pointer;
+  padding: 10px 6px;
+}
+
+.primary-btn{
+  border:0;
+  background: var(--accent);
+  color:#111;
+  font-weight: 900;
+  padding: 12px 16px;
+  border-radius: 999px;
+  cursor:pointer;
+  min-width: 140px;
+}
+.primary-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.primary-btn:not(:disabled):active{ background: var(--accent-press); }
+
+.ghost-btn{
+  border: 1px solid var(--border);
+  background:#fff;
+  color:#111;
+  font-weight: 900;
+  padding: 12px 16px;
+  border-radius: 999px;
+  cursor:pointer;
+}
+
+/* RESULT */
+.hidden{ display:none; }
+
+.result{
+  text-align:center;
+}
+.result-badge{
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  margin: 2px auto 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 26px;
+  background:#f3f4f6;
+}
+.result-title{
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 950;
+}
+.result-desc{
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.result-box{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  text-align:left;
+  margin: 14px 0 16px;
+}
+.result-box-title{
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+.result-box-value{
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.result-actions{
+  display:flex;
+  gap: 10px;
+  justify-content:center;
+}
+
+.tiny{
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.noscript{
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align:center;
+}
