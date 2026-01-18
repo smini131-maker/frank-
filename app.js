@@ -103,7 +103,7 @@ const QUESTIONS = [
     options: [
       { label: "퀄리티/완성도", icon: "👑", type: "premium", w: { premium: 2, juicy: 0.5 } },
       { label: "패티 존재감(고기 맛)", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
-      { label: "식감(크런치/튀김/번)", icon: "✨", type: "crispy", w: { crispy: 2 } },
+      { label: "식감(크런치/튀김)", icon: "✨", type: "crispy", w: { crispy: 2 } },
       { label: "먹던거면 충분", icon: "🍔", type: "classic", w: { classic: 2 } },
     ],
   },
@@ -320,6 +320,7 @@ shareBtn.addEventListener("click", async () => {
 });
 
 renderQuestion();
+
 
 
 
