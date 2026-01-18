@@ -1,18 +1,7 @@
-/* =========================
-   (선택) 응답 저장 URL
-========================= */
-const CONFIG = {
-  SUBMIT_URL: "", // 예: "https://script.google.com/macros/s/XXXX/exec"
-};
+const CONFIG = { SUBMIT_URL: "" };
 
-/* =========================
-  타입 키(6개)
-========================= */
 const TYPES = ["classic", "spicy", "juicy", "crispy", "nutty", "premium"];
 
-/* =========================
-  결과: (이미지 1 톤앤매너 + 이미지 2 메뉴 매핑)
-========================= */
 const RESULT_MAP = {
   classic: {
     badge: "🍔",
@@ -53,78 +42,78 @@ const RESULT_MAP = {
     badge: "👑",
     title: "프리미엄",
     tagline: "완성도 있는 버거를 선호. 고급재료로는 특별한 경험",
-    quote: "프리미엄을 좋아하는 당신! ‘100% 한우 버거’의 고급진 맛을 느껴보세요!",
+    quote: "프리미엄 취향이면 이거지. ‘100% 한우 버거’로 제대로 한 번 가자!",
     menus: ["100% 한우 버거", "비프 앤 쉬림프 버거"],
   },
 };
 
 /* ==========================================================
-  질문 7개 (덜 티 나는 간접 문항)
-  - 각 옵션은 한 타입만 찍지 않고 여러 타입에 가중치 분산
-  - 이후 실제 응답 데이터로 이 가중치를 ‘통계적으로 보정’ 가능
+  질문 7개 (자연스러운 말투)
+  - 보기 4개(2x2) 유지
+  - 가중치 분산 방식 유지
 ========================================================== */
 const QUESTIONS = [
   {
-    title: "편의점에서 ‘나도 모르게’ 손이 가는 건?",
+    title: "처음 한 입 먹고 ‘아 이거다’ 싶을 때는?",
     options: [
-      { label: "국룰 조합(늘 먹던 맛)", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
-      { label: "매운 과자/라면류", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
-      { label: "육포/단백질류", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
-      { label: "견과/고소한 스낵", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
+      { label: "맛이 딱 균형 잡혔을 때", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
+      { label: "혀끝에 전해지는 매운느낌이 딱 올 때", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
+      { label: "입안 가듯 육즙이 확 퍼질 때", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "씹자 마자 바삭하는 소리가 들릴 때", icon: "✨", type: "crispy", w: { crispy: 2, classic: 0.5 } },
     ],
   },
   {
-    title: "치킨을 시키면 네 취향은 보통 이쪽",
+    title: "너 요즘 자꾸 끌리는 맛은 어느 쪽인가요?",
     options: [
-      { label: "후라이드(바삭이 전부)", icon: "✨", type: "crispy", w: { crispy: 2, classic: 0.5 } },
-      { label: "양념/매운맛(한 방)", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
-      { label: "구이/훈연(풍미파)", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
-      { label: "간장/마늘(조화·고소)", icon: "🌿", type: "nutty", w: { nutty: 1.5, classic: 1 } },
+      { label: "깔끔하고 무난한 맛", icon: "🍔", type: "classic", w: { classic: 2 } },
+      { label: "자극적이고 쎈 맛", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
+      { label: "진하고 묵직한 풍미", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
+      { label: "고소하고 조화로운 맛", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
     ],
   },
   {
-    title: "네 ‘소스 습관’에 더 가까운 건?",
+    title: "소스는 보통 어떻게 먹는 편인가요?",
     options: [
-      { label: "소스는 최소(재료 맛)", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1, classic: 0.5 } },
-      { label: "소스 듬뿍(풍부해야 함)", icon: "🌿", type: "nutty", w: { nutty: 1.5, spicy: 0.5, classic: 0.5 } },
-      { label: "찍먹파(바삭 지킨다)", icon: "✨", type: "crispy", w: { crispy: 2, classic: 0.5 } },
-      { label: "매콤 소스는 무조건 추가", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
+      { label: "기본이 최고(그대로 먹음)", icon: "🍔", type: "classic", w: { classic: 2, premium: 0.5 } },
+      { label: "매콤한 건 있으면 무조건 추가", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
+      { label: "고소한 조합에 약해", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
+      { label: "재료 맛 느끼려고 최소만", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1, classic: 0.5 } },
     ],
   },
   {
-    title: "이걸로 취향이 가려진다고? (낚시 질문) 🤔",
+    title: "튀김류 먹을 때 너는 어떤 스타일인가요?",
     options: [
-      { label: "피넛버터+치즈? 오히려 좋아", icon: "🌿", type: "nutty", w: { nutty: 2, premium: 0.5 } },
-      { label: "더블패티면 대화 종료", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
-      { label: "난 정석이 편하다", icon: "🍔", type: "classic", w: { classic: 2 } },
-      { label: "매운맛은 ‘끝’까지 간다", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
+      { label: "바삭함 죽으면 게임 끝", icon: "✨", type: "crispy", w: { crispy: 2 } },
+      { label: "소스에 적셔도 맛만 있으면 됨", icon: "🌿", type: "nutty", w: { nutty: 1.5, classic: 0.5 } },
+      { label: "매운 소스면 더 좋지", icon: "🌶️", type: "spicy", w: { spicy: 1.5, crispy: 0.5 } },
+      { label: "두께/풍미(내용물)가 중요", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
     ],
   },
   {
-    title: "감자튀김은 어떤 타입이 진짜야?",
+    title: "한 입 만족도가 팍 올라가는 순간은 어떨 때인가요?",
     options: [
-      { label: "얇고 바삭(크런치)", icon: "✨", type: "crispy", w: { crispy: 2, spicy: 0.5 } },
-      { label: "두껍고 든든(포만감)", icon: "🍖", type: "juicy", w: { juicy: 1.5, classic: 0.5 } },
-      { label: "양념/시즈닝(자극)", icon: "🌶️", type: "spicy", w: { spicy: 1.5, crispy: 0.5, nutty: 0.5 } },
-      { label: "트러플/치즈(고급)", icon: "👑", type: "premium", w: { premium: 2, nutty: 0.5 } },
+      { label: "씹자마자 울리는 ‘바삭!’ 소리가 들릴때", icon: "✨", type: "crispy", w: { crispy: 2 } },
+      { label: "입안 가득 나오는 ‘육즙!’이 느껴질때", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "먹고 나서 올라오는 고소한 여운이 느껴질때때", icon: "🌿", type: "nutty", w: { nutty: 2 } },
+      { label: "짜릿한 매운맛이 딱 꽂힐 때", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
     ],
   },
   {
-    title: "‘한 입’에서 더 행복한 순간은?",
+    title: "돈 조금 더 내도 ‘이건 인정’인 포인트는?",
     options: [
-      { label: "씹자마자 ‘바삭!’", icon: "✨", type: "crispy", w: { crispy: 2 } },
-      { label: "입안에 ‘육즙!’", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
-      { label: "은은하게 ‘고소!’", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
-      { label: "혀끝에 ‘화끈!’", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
-    ],
-  },
-  {
-    title: "마지막! 너의 ‘선택 기준’은 보통 이거",
-    options: [
-      { label: "실패 없는 정석", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
-      { label: "자극이 있어야 만족", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
       { label: "퀄리티/완성도", icon: "👑", type: "premium", w: { premium: 2, juicy: 0.5 } },
-      { label: "듣도보도 못한 조합(끌림)", icon: "🌿", type: "nutty", w: { nutty: 1.5, premium: 0.5, spicy: 0.5 } },
+      { label: "패티 존재감(고기 맛)", icon: "🍖", type: "juicy", w: { juicy: 2, premium: 0.5 } },
+      { label: "식감(크런치/튀김/번)", icon: "✨", type: "crispy", w: { crispy: 2 } },
+      { label: "먹던거면 충분", icon: "🍔", type: "classic", w: { classic: 2 } },
+    ],
+  },
+  {
+    title: "마지막! 너한테 제일 잘 맞는 말은?",
+    options: [
+      { label: "안정적인 정석이 최고", icon: "🍔", type: "classic", w: { classic: 2, nutty: 0.5 } },
+      { label: "자극 없으면 심심해", icon: "🌶️", type: "spicy", w: { spicy: 2 } },
+      { label: "진한 풍미면 그냥 OK", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
+      { label: "고소하고 조화로운 맛이 좋아", icon: "🌿", type: "nutty", w: { nutty: 2 } },
     ],
   },
 ];
@@ -225,13 +214,11 @@ function calcScores() {
 
 function pickTop2(scores) {
   const sorted = [...TYPES].sort((a, b) => scores[b] - scores[a]);
-  return { top1: sorted[0], top2: sorted[1], sorted };
+  return { top1: sorted[0], top2: sorted[1] };
 }
 
-function calcResultType() {
-  const scores = calcScores();
-  const { top1 } = pickTop2(scores);
-  return top1;
+function typeName(t) {
+  return RESULT_MAP[t]?.title ?? t;
 }
 
 async function submitIfNeeded(resultType, scores) {
@@ -256,10 +243,6 @@ async function submitIfNeeded(resultType, scores) {
   }
 }
 
-function typeName(t) {
-  return RESULT_MAP[t]?.title ?? t;
-}
-
 async function showResult() {
   progressFill.style.width = `100%`;
 
@@ -270,7 +253,6 @@ async function showResult() {
   resultBadge.textContent = r.badge;
   resultTitle.textContent = r.title;
 
-  // 보조취향 표시(박빙이면)
   const gap = (scores[top1] ?? 0) - (scores[top2] ?? 0);
   const secondary = gap <= 1 ? ` · 보조취향: ${typeName(top2)}` : "";
   resultTagline.textContent = `${r.tagline}${secondary}`;
@@ -332,10 +314,9 @@ shareBtn.addEventListener("click", async () => {
       await navigator.share({ title: document.title, text, url });
     } else {
       await navigator.clipboard.writeText(url);
-      alert("링크를 복사했어!");
+      alert("링크 복사했어!");
     }
   } catch (_) {}
 });
 
-// 시작
 renderQuestion();
