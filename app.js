@@ -74,19 +74,19 @@ const QUESTIONS = [
   {
     title: "소스는 보통 어떻게 먹는 편인가요?",
     options: [
-      { label: "기본이 최고(그대로 먹음)", icon: "🍔", type: "classic", w: { classic: 2, premium: 0.5 } },
+      { label: "기본이 최고", icon: "🍔", type: "classic", w: { classic: 2, premium: 0.5 } },
       { label: "매콤한 건 있으면 무조건 추가", icon: "🌶️", type: "spicy", w: { spicy: 2, crispy: 0.5 } },
-      { label: "고소한 조합에 약해", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
-      { label: "재료 맛 느끼려고 최소만", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1, classic: 0.5 } },
+      { label: "무조건 고소하고 조화로운 맛이", icon: "🌿", type: "nutty", w: { nutty: 2, classic: 0.5 } },
+      { label: "재료 맛 느끼려고 최소로 넣기", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1, classic: 0.5 } },
     ],
   },
   {
     title: "튀김류 먹을 때 너는 어떤 스타일인가요?",
     options: [
       { label: "바삭함 죽으면 게임 끝", icon: "✨", type: "crispy", w: { crispy: 2 } },
-      { label: "소스에 적셔도 맛만 있으면 됨", icon: "🌿", type: "nutty", w: { nutty: 1.5, classic: 0.5 } },
-      { label: "매운 소스면 더 좋지", icon: "🌶️", type: "spicy", w: { spicy: 1.5, crispy: 0.5 } },
-      { label: "두께/풍미(내용물)가 중요", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
+      { label: "소스에 적셔도 맛만 있으면 OK", icon: "🌿", type: "nutty", w: { nutty: 1.5, classic: 0.5 } },
+      { label: "매운 소스면 최고", icon: "🌶️", type: "spicy", w: { spicy: 1.5, crispy: 0.5 } },
+      { label: "두께/풍미가 중요", icon: "🍖", type: "juicy", w: { juicy: 1.5, premium: 1 } },
     ],
   },
   {
@@ -320,5 +320,6 @@ shareBtn.addEventListener("click", async () => {
 });
 
 renderQuestion();
+
 
 
