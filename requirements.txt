@@ -1,0 +1,8 @@
+adafruit-circuitpython-servokit
+gpiozero
+lgpio
+numpy
+opencv-python-headless
+Pillow
+tflite-runtime
+gTTS
